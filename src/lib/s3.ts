@@ -21,14 +21,20 @@ export async function uploadToS3(
 			// 	Date.now().toString() +
 			// 	file.name.replace(' ', '-');
 
-			const file_key = `uploads/${Date.now()}${file.name.replaceAll(
-				' ',
-				'-'
-			)}`;
+			const file_key =
+				'uploads/' +
+				Date.now().toString() +
+				file.name.replace(' ', '-');
+
+			// const file_key = `uploads/${Date.now().toString()}${file.name.replaceAll(
+			// 	' ',
+			// 	'-'
+			// )}`;
 
 			const params = {
-				Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME!,
+				ContentType: 'application/pdf',
 				Key: file_key,
+				Bucket: process.env.NEXT_PUBLIC_S3_BUCKET_NAME!,
 				Body: file,
 			};
 
@@ -51,6 +57,6 @@ export async function uploadToS3(
 }
 
 export function getS3Url(file_key: string) {
-	const url = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.${process.env.NEXT_PUBLIC_S3_REGION}.amazonaws.com/${file_key}`;
+	const url = `https://${process.env.NEXT_PUBLIC_S3_BUCKET_NAME}.s3.${process.env.NEXT_PUBLIC_S3_REGION}.amazonaws.com/${file_key}`;
 	return url;
 }
