@@ -17,15 +17,17 @@ export default async function Home() {
 				<div className="flex flex-col items-center text-center">
 					<div className="flex items-center mt-5 flex-col-reverse">
 						<h1 className=" text-xl font-semibold sm:text-3xl md:text-5xl mt-8 text-white">
-							Chatea con tu PDF
+							Chat with your PDF
 						</h1>
 						<UserButton afterSignOutUrl="/" />
 					</div>
 					<div className="flex mt-5">
 						{isAuth && (
-							<Button className="bg-gray-100 text-black hover:bg-gray-200">
-								Ir al chat
-							</Button>
+							<Link href={'/chat/1'}>
+								<Button className="bg-gray-100 text-black hover:bg-gray-200">
+									Chats
+								</Button>
+							</Link>
 						)}
 					</div>
 
@@ -37,7 +39,7 @@ export default async function Home() {
 					<div className="text-white mt-2 font-bold md:text-2xl">
 						{user && (
 							<p className="italic text-sm sm:text-lg">
-								{user?.firstName || user.lastName}, Sube tu PDF
+								{user?.firstName || user.lastName}, upload a PDF
 							</p>
 						)}
 					</div>
