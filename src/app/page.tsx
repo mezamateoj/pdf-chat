@@ -49,7 +49,7 @@ export default async function Home() {
 						) : (
 							<Link href="/sign-in">
 								<Button className="bg-slate-100 text-black hover:bg-slate-200 transition-all duration-200">
-									Inicia sesion para empezar
+									Sign in to start uploading...
 									<LogIn className="w-4 h-4 ml-2" />
 								</Button>
 							</Link>
