@@ -15,21 +15,10 @@ export async function uploadToS3(
 				},
 			});
 
-			// create file key, in bucket, to store file in upload folder
-			// const file_key =
-			// 	'uploads/' +
-			// 	Date.now().toString() +
-			// 	file.name.replace(' ', '-');
-
 			const file_key =
 				'uploads/' +
 				Date.now().toString() +
 				file.name.replace(' ', '-');
-
-			// const file_key = `uploads/${Date.now().toString()}${file.name.replaceAll(
-			// 	' ',
-			// 	'-'
-			// )}`;
 
 			const params = {
 				ContentType: 'application/pdf',

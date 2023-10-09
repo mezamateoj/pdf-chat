@@ -5,7 +5,6 @@ type Props = {
 };
 
 export default function PDFViewer({ pdf_url }: Props) {
-	console.log(pdf_url);
 	return (
 		<iframe
 			src={`https://docs.google.com/gview?url=${pdf_url}&embedded=true`}

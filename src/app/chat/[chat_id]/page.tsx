@@ -1,3 +1,4 @@
+import ChatComponent from '@/components/ChatComponent';
 import ChatSideBar from '@/components/ChatSideBar';
 import PDFViewer from '@/components/PDFViewer';
 import { db } from '@/lib/db';
@@ -26,13 +27,13 @@ export default async function ChatPage({ params: { chat_id } }: Props) {
 		.from(chats)
 		.where(eq(chats.userId, userId));
 
-	// if (!_chats) {
-	// 	return redirect('/');
-	// }
+	if (!_chats) {
+		return redirect('/');
+	}
 
-	// if (!_chats.find((chat) => chat.id === +chat_id)) {
-	// 	return redirect('/');
-	// }
+	if (!_chats.find((chat) => chat.id === +chat_id)) {
+		return redirect('/');
+	}
 
 	const currentChat = _chats.find((chat) => chat.id === +chat_id);
 
@@ -49,8 +50,7 @@ export default async function ChatPage({ params: { chat_id } }: Props) {
 				</div>
 				{/* chat component*/}
 				<div className="flex-[3] border-l-4 border-l-slate-300">
-					{/* <ChatComponent /> */}
-					chat component
+					<ChatComponent chatId={+chat_id} />
 				</div>
 			</div>
 		</div>
