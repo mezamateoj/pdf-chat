@@ -30,6 +30,9 @@ export async function getMatchesFromEmbeddings(
 
 export async function getContext(query: string, file_key: string) {
 	const queryEmbeddings = await getEmbeddings(query);
+	if (!queryEmbeddings) {
+		throw new Error('Embeddings could not be generated');
+	}
 	const matches = await getMatchesFromEmbeddings(queryEmbeddings, file_key);
 
 	const qualifyingDocs = matches.filter(
