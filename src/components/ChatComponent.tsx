@@ -44,8 +44,8 @@ export default function ChatComponent({ chatId }: Props) {
 			className="relative max-h-screen overflow-y-scroll"
 			id="message-container"
 		>
-			<div className="sticky top-0 inset-x-0 p-2 bg-white h-fit">
-				<h3 className="text-xl font-bold">Chat</h3>
+			<div className="sticky top-0 inset-x-0 p-2 bg-white h-fit mt-2">
+				<h3 className="text-xl font-bold">Chat PDF</h3>
 			</div>
 
 			{/* message list */}
