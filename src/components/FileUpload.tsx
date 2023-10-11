@@ -20,6 +20,7 @@ const errorToast = (message: string, desc: string) => {
 	toast.error(message, {
 		duration: 4000,
 		description: desc,
+		position: 'top-center',
 	});
 };
 
@@ -94,7 +95,7 @@ function FileUpload() {
 			<div
 				{...getRootProps({
 					className:
-						'border-2 border-dashed bg-gray-100 rounded-xl p-6 flex justify-center items-center flex-col hover:cursor-pointer',
+						'border-2 border-dashed bg-gray-200 rounded-xl p-6 flex justify-center items-center flex-col hover:cursor-pointer',
 				})}
 			>
 				<input type="text" {...getInputProps()} />

@@ -17,7 +17,9 @@ export default function MessageList({ messages, isLoading }: Props) {
 		);
 	}
 	if (messages.length === 0) {
-		return <div className="font-bold ml-2">🪄 start chatting...</div>;
+		return (
+			<div className="font-bold ml-2">🪄 Start asking questions...</div>
+		);
 	}
 	return (
 		<div className="flex flex-col gap-2 px-4">
@@ -34,7 +36,7 @@ export default function MessageList({ messages, isLoading }: Props) {
 							'rounded-md px-3 text-sm py-1 shadow-md ring-1',
 							{
 								'bg-blue-500 text-white': m.role === 'user',
-								'bg-gray-200 text-gray-700':
+								'bg-gray-300 text-gray-700':
 									m.role === 'assistant',
 							}
 						)}
