@@ -5,6 +5,8 @@ import { ArrowBigRight, ArrowRight, LogIn } from 'lucide-react';
 import { currentUser } from '@clerk/nextjs';
 import type { User } from '@clerk/nextjs/api';
 import { default as FileUpload } from '@/components/FileUpload';
+import { checkSubscription } from '@/lib/subscription';
+import SubButton from '@/components/SubButton';
 import { db } from '@/lib/db';
 import { chats } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
@@ -13,6 +15,8 @@ export default async function Home() {
 	const { userId } = auth();
 	const isAuth = !!userId;
 	const user: User | null = await currentUser();
+
+	const isPro = await checkSubscription();
 
 	let firstChat;
 	if (userId) {
@@ -44,8 +48,12 @@ export default async function Home() {
 								</Button>
 							</Link>
 						)}
+						<div className="ml-3">
+							<SubButton isPro={isPro} />
+						</div>
 					</div>
 
+					<p className="max-w-xl text-sm sm:text-lg mt-2  sm:font-medium text-transparent bg-clip-text bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-zinc-100 via-neutral-300 to-cyan-200">
 					<p className="max-w-xl text-sm sm:text-lg mt-2  sm:font-medium text-transparent bg-clip-text bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-zinc-100 via-neutral-300 to-cyan-200">
 						Join million of students, researchers and professionals
 						to instantly answer questions from your PDF thanks to
@@ -60,7 +68,7 @@ export default async function Home() {
 						) : (
 							<Link href="/sign-in">
 								<Button className="bg-slate-100 text-black hover:bg-slate-200 transition-all duration-200">
-									Sign in to start uploading...
+									Sign in
 									<LogIn className="w-4 h-4 ml-2" />
 								</Button>
 							</Link>

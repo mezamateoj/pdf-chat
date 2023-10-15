@@ -21,6 +21,7 @@ const errorToast = (message: string, desc: string) => {
 	toast.error(message, {
 		duration: 4000,
 		description: desc,
+		position: 'top-center',
 	});
 };
 
