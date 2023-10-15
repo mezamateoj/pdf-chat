@@ -1,12 +1,13 @@
 'use client';
 import { uploadToS3 } from '@/lib/s3';
-import { Inbox, Loader2 } from 'lucide-react';
-import React from 'react';
-import { useDropzone } from 'react-dropzone';
+import { File, Inbox, Loader2, UploadCloud } from 'lucide-react';
+import React, { useState } from 'react';
+import Dropzone, { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
+import { Progress } from './ui/progress';
 
 const successToast = () => {
 	toast('File uploaded', {
@@ -24,11 +25,28 @@ const errorToast = (message: string, desc: string) => {
 	});
 };
 
-function FileUpload() {
-	const [uploading, setUploading] = React.useState(false);
+const UploadDropzone = () => {
+	const [isUploading, setIsUploading] = useState(false);
+	const [uploadProgress, setUploadProgress] = useState(0);
 	const router = useRouter();
 
-	const { mutate, isLoading } = useMutation({
+	// deterministically update progress bar
+	const startSimulatedUpload = () => {
+		setUploadProgress(0);
+		const interval = setInterval(() => {
+			setUploadProgress((prevProgress) => {
+				if (prevProgress >= 95) {
+					clearInterval(interval);
+					return prevProgress;
+				}
+				return prevProgress + 5;
+			});
+		}, 500);
+
+		return interval;
+	};
+
+	const { mutate } = useMutation({
 		mutationFn: async ({
 			file_key,
 			file_name,
@@ -40,81 +58,104 @@ function FileUpload() {
 				file_key,
 				file_name,
 			});
-			if (isLoading) {
-				console.log('loading');
-			}
-			console.log('Success uploading file');
+
+			setUploadProgress(100);
 			return response.data;
 		},
 	});
 
-	const { getRootProps, getInputProps } = useDropzone({
-		accept: { 'application/pdf': ['.pdf'] },
-		maxFiles: 1,
-		onDrop: async (acceptedFiles) => {
-			const file = acceptedFiles[0];
+	return (
+		<Dropzone
+			multiple={false}
+			onDrop={async (acceptedFile) => {
+				const file = acceptedFile[0];
+				setIsUploading(true);
+				const progressInterval = startSimulatedUpload();
 
-			// if file is larger than 10MB
-			if (file.size > 10 * 1024 * 1024) {
-				errorToast(
-					'File too large',
-					'Please try again with a smaller file'
-				);
-				return;
-			}
+				try {
+					const data = await uploadToS3(file);
 
-			try {
-				setUploading(true);
-				const data = await uploadToS3(file);
-				if (!data?.file_key || !data.file_name) {
+					if (!data?.file_key || !data.file_name) {
+						throw new Error('File upload failed');
+					}
+
+					mutate(data, {
+						onSuccess: ({ chat_id }) => {
+							successToast();
+							clearInterval(progressInterval);
+							setIsUploading(false);
+							router.push(`/chat/${chat_id}`);
+						},
+						onError: (error) => {
+							console.log('error ' + error);
+							errorToast(
+								'File upload failed',
+								'Please try again'
+							);
+						},
+					});
+				} catch (error) {
+					console.log(error);
 					errorToast('File upload failed', 'Please try again');
-					return;
+					clearInterval(progressInterval);
+					setIsUploading(false);
 				}
+				// handle file upload
+			}}
+		>
+			{({ getRootProps, getInputProps, acceptedFiles }) => (
+				<div
+					{...getRootProps()}
+					className="border h-64 m-4 border-dashed border-gray-300 rounded-md"
+				>
+					<div className="flex items-center justify-center h-full w-full">
+						<label
+							htmlFor="dropzone-file"
+							className="flex flex-col items-center justify-center h-full w-full cursor-pointer rounded-md bg-gray-50 hover:bg-gray-100"
+						>
+							<div className="flex flex-col items-center justify-center pt-5 pb-6">
+								<UploadCloud className="sm:w-12 sm:h-12 w-9 h-9 text-blue-500 mb-2" />
+								<p className="mb-2 text-sm text-zinc-700">
+									<span className="font-semibold">
+										Click to upload
+									</span>{' '}
+									or drag and drop
+								</p>
+								<p className="text-xs text-zinc-500">
+									PDF (up to 4MB)
+								</p>
+							</div>
+							{acceptedFiles && acceptedFiles[0] ? (
+								<div className="max-w-xs bg-white flex items-center rounded-md overflow-hidden outline outline-[1px] outline-zinc-200 divide-x divide-zinc-200">
+									<div className="px-3 py-2 h-full grid place-items-center">
+										<File className="h-5 w-5 text-blue-500" />
+									</div>
+									<div className="px-3 py-2 h-full grid text-sm truncate">
+										{acceptedFiles[0].name}
+									</div>
+								</div>
+							) : null}
 
-				mutate(data, {
-					onSuccess: ({ chat_id }) => {
-						successToast();
-						router.push(`/chat/${chat_id}`);
-					},
-					onError: (error) => {
-						console.log('error ' + error);
-						errorToast('File upload failed', 'Please try again');
-					},
-				});
-			} catch (error) {
-				console.log(error);
-				errorToast('File upload failed', 'Please try again');
-			} finally {
-				setUploading(false);
-			}
-		},
-	});
+							{isUploading ? (
+								<div className="w-full mt-4 max-w-xs mx-auto">
+									<Progress
+										value={uploadProgress}
+										className="h-2 w-full bg-zinc-200"
+									/>
+								</div>
+							) : null}
+						</label>
+					</div>
+				</div>
+			)}
+		</Dropzone>
+	);
+};
 
+function FileUpload() {
 	return (
 		<div className="p-2 bg-white rounded-xl">
-			<div
-				{...getRootProps({
-					className:
-						'border-2 border-dashed bg-gray-200 rounded-xl p-6 flex justify-center items-center flex-col hover:cursor-pointer',
-				})}
-			>
-				<input type="text" {...getInputProps()} />
-				{uploading || isLoading ? (
-					<>
-						<Loader2 className="h-10 w-10 text-blue-500 animate-spin" />
-						<p className="mt-2 text-sm text-slate-500">
-							Uploading PDF...
-						</p>
-					</>
-				) : (
-					<>
-						<Inbox className="sm:w-12 sm:h-12 w-9 h-9 text-blue-500" />
-						<p className="mt-2 text-xs sm:test-sm text-slate-400">
-							Drop PDF here
-						</p>
-					</>
-				)}
-			</div>
+			<UploadDropzone />
 		</div>
 	);
 }

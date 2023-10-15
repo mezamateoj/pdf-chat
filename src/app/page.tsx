@@ -1,12 +1,15 @@
 import { Button } from '@/components/ui/button';
 import { UserButton, auth } from '@clerk/nextjs';
 import Link from 'next/link';
-import { LogIn } from 'lucide-react';
+import { ArrowBigRight, ArrowRight, LogIn } from 'lucide-react';
 import { currentUser } from '@clerk/nextjs';
 import type { User } from '@clerk/nextjs/api';
 import { default as FileUpload } from '@/components/FileUpload';
 import { checkSubscription } from '@/lib/subscription';
 import SubButton from '@/components/SubButton';
+import { db } from '@/lib/db';
+import { chats } from '@/lib/db/schema';
+import { eq } from 'drizzle-orm';
 
 export default async function Home() {
 	const { userId } = auth();
@@ -14,6 +17,17 @@ export default async function Home() {
 	const user: User | null = await currentUser();
 
 	const isPro = await checkSubscription();
+
+	let firstChat;
+	if (userId) {
+		firstChat = await db
+			.select()
+			.from(chats)
+			.where(eq(chats.userId, userId));
+		if (firstChat) {
+			firstChat = firstChat[0];
+		}
+	}
 
 	return (
 		<div className="w-screen min-h-screen bg-gradient-to-b from-gray-900 to-gray-600 bg-gradient-to-r">
@@ -27,9 +41,10 @@ export default async function Home() {
 					</div>
 					<div className="flex mt-5">
 						{isAuth && (
-							<Link href={`/chat/1`}>
-								<Button className="bg-gray-100 text-black hover:bg-gray-200">
-									Chats
+							<Link href={`/chat/${firstChat?.id}`}>
+								<Button className="bg-gray-100 text-black hover:bg-gray-200 flex items-center">
+									Chats{' '}
+									<ArrowRight className="w-5 h-5 ml-1" />
 								</Button>
 							</Link>
 						)}
@@ -46,13 +61,6 @@ export default async function Home() {
 							OpenAI.
 						</span>
 					</p>
-					<div className="text-white mt-2 font-bold md:text-2xl">
-						{user && (
-							<p className="italic text-sm sm:text-lg mt-5">
-								{user?.firstName || user.lastName}, upload a PDF
-							</p>
-						)}
-					</div>
 					<div className="w-full mt-5">
 						{isAuth ? (
 							<FileUpload />

@@ -50,11 +50,7 @@ export async function loadS3IntoPinecone(file_key: string) {
 	const namespace = pineconeIndex.namespace(convertToAscii(file_key));
 	console.log('loading vectors into pinecone');
 
-	await namespace.upsert(
-		vectors.filter(
-			(vector): vector is PineconeRecord => vector !== undefined
-		)
-	);
+	await namespace.upsert(vectors as PineconeRecord[]);
 	return documents[0];
 }
 
