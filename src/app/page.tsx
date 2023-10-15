@@ -54,7 +54,6 @@ export default async function Home() {
 					</div>
 
 					<p className="max-w-xl text-sm sm:text-lg mt-2  sm:font-medium text-transparent bg-clip-text bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-zinc-100 via-neutral-300 to-cyan-200">
-					<p className="max-w-xl text-sm sm:text-lg mt-2  sm:font-medium text-transparent bg-clip-text bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-zinc-100 via-neutral-300 to-cyan-200">
 						Join million of students, researchers and professionals
 						to instantly answer questions from your PDF thanks to
 						<span className="font-bold border-b border-slate-500">
