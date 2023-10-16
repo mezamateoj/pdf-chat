@@ -10,6 +10,7 @@ import SubButton from '@/components/SubButton';
 import { db } from '@/lib/db';
 import { chats } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import MercadoPago from '@/components/MercadoPago';
 
 export default async function Home() {
 	const { userId } = auth();
@@ -74,6 +75,7 @@ export default async function Home() {
 						)}
 					</div>
 				</div>
+				<MercadoPago />
 			</div>
 		</div>
 	);
