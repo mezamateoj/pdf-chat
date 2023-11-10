@@ -12,7 +12,7 @@ export async function getMatchesFromEmbeddings(
 	});
 
 	try {
-		const pineconeIndex = await pinecone.index('chat-pdf');
+		const pineconeIndex = await pinecone.index('chat-pdf-index');
 		const namespace = pineconeIndex.namespace(convertToAscii(file_key));
 
 		const queryResult = await namespace.query({

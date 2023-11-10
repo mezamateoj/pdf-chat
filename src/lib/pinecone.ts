@@ -11,7 +11,7 @@ import { convertToAscii } from './utils';
 
 // let pinecone: Pinecone | null = null;
 
-export const getPinecone = () => {
+export const getPinecone = async () => {
 	return new Pinecone({
 		environment: process.env.PINECONE_ENVIRONMENT!,
 		apiKey: process.env.PINECONE_API_KEY!,
@@ -46,7 +46,8 @@ export async function loadS3IntoPinecone(file_key: string) {
 
 	// 4. load vectors into pinecone
 	const client = await getPinecone();
-	const pineconeIndex = await client.index('chat-pdf');
+	const pineconeIndex = await client.index('chat-pdf-index');
+	console.log('creating namespace');
 	const namespace = pineconeIndex.namespace(convertToAscii(file_key));
 	console.log('loading vectors into pinecone');
 

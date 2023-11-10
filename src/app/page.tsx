@@ -75,7 +75,7 @@ export default async function Home() {
 						)}
 					</div>
 				</div>
-				<MercadoPago />
+				{/* <MercadoPago /> */}
 			</div>
 		</div>
 	);
